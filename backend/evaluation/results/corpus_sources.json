@@ -1,0 +1,421 @@
+{
+  "sources": [
+    {
+      "source": "universal_dependencies",
+      "treebank": "en_ewt",
+      "license": "CC BY-SA 4.0",
+      "citation": "Silveira et al. 2014, A Gold Standard Dependency Corpus for English (LREC); Universal Dependencies.",
+      "url": "https://github.com/UniversalDependencies/UD_English-EWT",
+      "words": {
+        "train": 204578,
+        "dev": 25148,
+        "test": 25094
+      }
+    },
+    {
+      "source": "universal_dependencies",
+      "treebank": "en_gum",
+      "license": "CC BY 4.0 for most genres; some sub-corpora (e.g. wikiHow) CC BY-NC-SA. See the repository LICENSE.",
+      "citation": "Zeldes 2017, The GUM Corpus (Language Resources and Evaluation 51(3)); Universal Dependencies.",
+      "url": "https://github.com/UniversalDependencies/UD_English-GUM",
+      "words": {
+        "train": 200223,
+        "dev": 28119,
+        "test": 28397
+      }
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-psychology",
+      "book": "psychology-2e",
+      "title": "Psychology 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 105,
+      "words": 236702,
+      "url": "https://github.com/openstax/osbooks-psychology"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introduction-sociology",
+      "book": "introduction-sociology-3e",
+      "title": "Introduction to Sociology 3e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 96,
+      "words": 210016,
+      "url": "https://github.com/openstax/osbooks-introduction-sociology"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introduction-philosophy",
+      "book": "introduction-philosophy-2e",
+      "title": "Introduction to Philosophy 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 66,
+      "words": 173880,
+      "url": "https://github.com/openstax/osbooks-introduction-philosophy"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introduction-anthropology",
+      "book": "introduction-anthropology",
+      "title": "Introduction to Anthropology",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 121,
+      "words": 263073,
+      "url": "https://github.com/openstax/osbooks-introduction-anthropology"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introduction-political-science",
+      "book": "introduction-political-science",
+      "title": "Introduction to Political Science",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 107,
+      "words": 218989,
+      "url": "https://github.com/openstax/osbooks-introduction-political-science"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-american-government",
+      "book": "american-government-4e",
+      "title": "American Government 4e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 100,
+      "words": 281698,
+      "url": "https://github.com/openstax/osbooks-american-government"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-us-history",
+      "book": "us-history",
+      "title": "U.S. History",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 177,
+      "words": 375180,
+      "url": "https://github.com/openstax/osbooks-us-history"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-world-history",
+      "book": "world-history-volume-1",
+      "title": "World History Volume 1, to 1500",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 85,
+      "words": 266702,
+      "url": "https://github.com/openstax/osbooks-world-history"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-world-history",
+      "book": "world-history-volume-2",
+      "title": "World History Volume 2, from 1400",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 80,
+      "words": 260694,
+      "url": "https://github.com/openstax/osbooks-world-history"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-life-liberty-and-pursuit-happiness",
+      "book": "life-liberty-and-pursuit-happiness",
+      "title": "Life, Liberty, and the Pursuit of Happiness",
+      "license": "Creative Commons Attribution License",
+      "license_url": "http://creativecommons.org/licenses/by/4.0/",
+      "modules": 532,
+      "words": 769143,
+      "url": "https://github.com/openstax/osbooks-life-liberty-and-pursuit-happiness"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-economics-bundle",
+      "book": "principles-economics-3e",
+      "title": "Principles of Economics 3e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 182,
+      "words": 343943,
+      "url": "https://github.com/openstax/osbooks-principles-economics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-economics-bundle",
+      "book": "principles-macroeconomics-3e",
+      "title": "Principles of Macroeconomics 3e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 119,
+      "words": 215982,
+      "url": "https://github.com/openstax/osbooks-principles-economics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-economics-bundle",
+      "book": "principles-microeconomics-3e",
+      "title": "Principles of Microeconomics 3e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 100,
+      "words": 203045,
+      "url": "https://github.com/openstax/osbooks-principles-economics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-economics-bundle",
+      "book": "principles-macroeconomics-ap-courses-2e",
+      "title": "Principles of Macroeconomics for AP\u00ae Courses 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 104,
+      "words": 193025,
+      "url": "https://github.com/openstax/osbooks-principles-economics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-economics-bundle",
+      "book": "principles-microeconomics-ap-courses-2e",
+      "title": "Principles of Microeconomics for AP\u00ae Courses 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 98,
+      "words": 203094,
+      "url": "https://github.com/openstax/osbooks-principles-economics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introduction-business",
+      "book": "introduction-business-2e",
+      "title": "Introduction to Business 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 153,
+      "words": 249031,
+      "url": "https://github.com/openstax/osbooks-introduction-business"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-principles-marketing",
+      "book": "principles-marketing",
+      "title": "Principles of Marketing",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 132,
+      "words": 208024,
+      "url": "https://github.com/openstax/osbooks-principles-marketing"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-entrepreneurship",
+      "book": "entrepreneurship",
+      "title": "Entrepreneurship",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 79,
+      "words": 230965,
+      "url": "https://github.com/openstax/osbooks-entrepreneurship"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introductory-statistics-bundle",
+      "book": "introductory-statistics-2e",
+      "title": "Introductory Statistics 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 102,
+      "words": 94220,
+      "url": "https://github.com/openstax/osbooks-introductory-statistics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-introductory-statistics-bundle",
+      "book": "introductory-business-statistics-2e",
+      "title": "Introductory Business Statistics 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 77,
+      "words": 89089,
+      "url": "https://github.com/openstax/osbooks-introductory-statistics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-biology-bundle",
+      "book": "biology-2e",
+      "title": "Biology 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 259,
+      "words": 451320,
+      "url": "https://github.com/openstax/osbooks-biology-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-biology-bundle",
+      "book": "concepts-biology",
+      "title": "Concepts of Biology",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 107,
+      "words": 193909,
+      "url": "https://github.com/openstax/osbooks-biology-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-biology-bundle",
+      "book": "biology-ap-courses-2e",
+      "title": "Biology for AP\u00ae Courses 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 209,
+      "words": 455932,
+      "url": "https://github.com/openstax/osbooks-biology-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-anatomy-physiology",
+      "book": "anatomy-and-physiology-2e",
+      "title": "Anatomy and Physiology 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 198,
+      "words": 426031,
+      "url": "https://github.com/openstax/osbooks-anatomy-physiology"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-microbiology",
+      "book": "microbiology",
+      "title": "Microbiology",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 159,
+      "words": 390450,
+      "url": "https://github.com/openstax/osbooks-microbiology"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-chemistry-bundle",
+      "book": "chemistry-2e",
+      "title": "Chemistry 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 149,
+      "words": 218303,
+      "url": "https://github.com/openstax/osbooks-chemistry-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-chemistry-bundle",
+      "book": "chemistry-atoms-first-2e",
+      "title": "Chemistry: Atoms First 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 149,
+      "words": 221110,
+      "url": "https://github.com/openstax/osbooks-chemistry-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-astronomy",
+      "book": "astronomy-2e",
+      "title": "Astronomy 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 199,
+      "words": 393966,
+      "url": "https://github.com/openstax/osbooks-astronomy"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-college-physics-bundle",
+      "book": "college-physics-2e",
+      "title": "College Physics 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 283,
+      "words": 343687,
+      "url": "https://github.com/openstax/osbooks-college-physics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-college-physics-bundle",
+      "book": "college-physics-ap-courses-2e",
+      "title": "College Physics for AP\u00ae Courses 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 283,
+      "words": 361056,
+      "url": "https://github.com/openstax/osbooks-college-physics-bundle"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-lifespan-development",
+      "book": "lifespan-development",
+      "title": "Lifespan Development",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 100,
+      "words": 325029,
+      "url": "https://github.com/openstax/osbooks-lifespan-development"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-writing-guide",
+      "book": "writing-guide",
+      "title": "Writing Guide with Handbook",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 188,
+      "words": 290094,
+      "url": "https://github.com/openstax/osbooks-writing-guide"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-college-success",
+      "book": "college-success-2e",
+      "title": "College Success 2e",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 75,
+      "words": 169009,
+      "url": "https://github.com/openstax/osbooks-college-success"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-college-success",
+      "book": "college-success-concise",
+      "title": "College Success Concise",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 44,
+      "words": 107701,
+      "url": "https://github.com/openstax/osbooks-college-success"
+    },
+    {
+      "source": "openstax",
+      "repo": "osbooks-college-success",
+      "book": "preparing-for-college-success",
+      "title": "Preparing for College Success",
+      "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "modules": 49,
+      "words": 120867,
+      "url": "https://github.com/openstax/osbooks-college-success"
+    },
+    {
+      "source": "wikipedia",
+      "selection": "Level-4 vital articles",
+      "license": "CC BY-SA 4.0 (Wikipedia contributors)",
+      "url": "https://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level/4",
+      "articles": 0,
+      "words": 0
+    }
+  ]
+}

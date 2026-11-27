@@ -17,6 +17,7 @@ from sqlalchemy import select
 from app.core.config import BACKEND_DIR, get_settings
 from app.core.db import SessionLocal
 from app.core.migrations import upgrade_to_head
+from app.datasets import corpus, openstax, sources, treebank, wikipedia
 from app.evaluation import gold, outline
 from app.ml.simulator import pretrain, run_and_save
 from app.models import Material, QCell, Recommendation, Response
@@ -185,6 +186,37 @@ def cmd_eval_outline(args: argparse.Namespace) -> None:
           f"recall {result['micro_recall']:.2f}, F1 {result['micro_f1']:.2f}. Written to {out}")
 
 
+def _update_corpus_manifest(entries: list[dict]) -> None:
+    manifest = corpus.update_manifest(entries)
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    (RESULTS_DIR / "corpus_sources.json").write_text(json.dumps(manifest, indent=2))
+
+
+def cmd_fetch_corpus(args: argparse.Namespace) -> None:
+    entries: list[dict] = []
+    if args.treebanks:
+        entries += treebank.fetch_treebanks()
+    if args.openstax:
+        for repo in sources.OPENSTAX_REPOS:
+            entries += openstax.fetch_repo(repo)
+            print(f"OpenStax {repo}: done")
+    if args.wikipedia:
+        entries.append(wikipedia.fetch_articles(args.wikipedia))
+    _update_corpus_manifest(entries)
+    for entry in entries:
+        print(f"{entry['source']}: {entry.get('book') or entry.get('treebank') or entry.get('selection')} "
+              f"({entry.get('license')}): {entry.get('words')}")
+    cmd_corpus_exclude_gold(args)
+
+
+def cmd_corpus_exclude_gold(_args: argparse.Namespace) -> None:
+    texts = corpus.gold_lesson_texts()
+    exclusions = corpus.compute_exclusions(texts)
+    corpus.save_exclusions(exclusions)
+    print(f"Gold lessons: {len(texts)}. Excluded corpus documents: {len(exclusions['documents'])}, "
+          f"documents with excluded paragraphs: {len(exclusions['paragraphs'])}.")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -216,6 +248,12 @@ def main() -> None:
     evaluate_outline.add_argument("--split", choices=gold.SPLITS, default="dev")
     evaluate_outline.add_argument("--out")
     evaluate_outline.set_defaults(func=cmd_eval_outline)
+    fetch_corpus = sub.add_parser("fetch-corpus", help="download treebanks and the background corpus")
+    fetch_corpus.add_argument("--treebanks", action="store_true")
+    fetch_corpus.add_argument("--openstax", action="store_true")
+    fetch_corpus.add_argument("--wikipedia", type=int, default=0, help="number of vital articles to fetch")
+    fetch_corpus.set_defaults(func=cmd_fetch_corpus)
+    sub.add_parser("corpus-exclude-gold", help="remove gold lessons from the corpus").set_defaults(func=cmd_corpus_exclude_gold)
     vapid = sub.add_parser("gen-vapid")
     vapid.add_argument("--write", action="store_true", help="write keys into backend/.env")
     vapid.set_defaults(func=cmd_gen_vapid)

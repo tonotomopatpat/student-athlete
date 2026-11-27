@@ -1,0 +1,6 @@
+-r requirements-dev.txt
+torch
+numpy
+sentencepiece
+pyarrow
+tensorboard

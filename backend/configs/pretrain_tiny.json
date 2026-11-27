@@ -1,0 +1,31 @@
+{
+  "model": {
+    "vocab_size": 32000,
+    "d_model": 384,
+    "n_heads": 6,
+    "d_ff": 1536,
+    "encoder_layers": 4,
+    "decoder_layers": 4,
+    "dropout": 0.0
+  },
+  "train": {
+    "input_length": 512,
+    "noise_density": 0.15,
+    "mean_span_length": 3.0,
+    "micro_batch_size": 16,
+    "grad_accum_steps": 4,
+    "learning_rate": 0.001,
+    "warmup_steps": 2000,
+    "weight_decay": 0.01,
+    "total_tokens": 1200000000,
+    "seed": 1234,
+    "precision": "auto",
+    "gradient_checkpointing": false,
+    "log_every": 20,
+    "eval_every": 2000,
+    "sample_every": 1000,
+    "checkpoint_minutes": 30
+  },
+  "tokenizer": "models/tokenizer/v1",
+  "shards": "data/corpus/shards"
+}

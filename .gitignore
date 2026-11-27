@@ -15,4 +15,7 @@ backend/data/exports/
 backend/data/gold/*
 !backend/data/gold/manifest.csv
 backend/data/corpus/
+backend/runs/
+backend/models/
+backend/scripts/tools/out/
 backend/data/ocr/
