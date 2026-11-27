@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic[email]
+pydantic-settings
+argon2-cffi
+pyjwt
+python-multipart
+apscheduler
+pywebpush
+pymysql
+cryptography

@@ -1,0 +1,223 @@
+{
+  "disclaimer": "Simulation only. Activity effects are assumed; results do not describe real learners.",
+  "pretrain_students": 5000,
+  "eval_students_per_policy": 2000,
+  "results": {
+    "train_env": {
+      "random": {
+        "topics_gained": {
+          "mean": 2.4895,
+          "ci95": 0.0576
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2452,
+          "ci95": 0.0071
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9219,
+          "ci95": 0.0045
+        }
+      },
+      "fixed_sequence": {
+        "topics_gained": {
+          "mean": 2.573,
+          "ci95": 0.0586
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2537,
+          "ci95": 0.0072
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9249,
+          "ci95": 0.0045
+        }
+      },
+      "mastery_rule": {
+        "topics_gained": {
+          "mean": 2.926,
+          "ci95": 0.055
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2868,
+          "ci95": 0.0065
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9452,
+          "ci95": 0.0039
+        }
+      },
+      "q_learning_frozen": {
+        "topics_gained": {
+          "mean": 2.248,
+          "ci95": 0.0585
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2113,
+          "ci95": 0.007
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9172,
+          "ci95": 0.0044
+        }
+      },
+      "q_learning_online": {
+        "topics_gained": {
+          "mean": 2.639,
+          "ci95": 0.0585
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2673,
+          "ci95": 0.0076
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9454,
+          "ci95": 0.0037
+        }
+      }
+    },
+    "shifted_env": {
+      "random": {
+        "topics_gained": {
+          "mean": 2.4395,
+          "ci95": 0.0592
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2408,
+          "ci95": 0.0074
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9169,
+          "ci95": 0.0046
+        }
+      },
+      "fixed_sequence": {
+        "topics_gained": {
+          "mean": 2.467,
+          "ci95": 0.0591
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2431,
+          "ci95": 0.0073
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9201,
+          "ci95": 0.0045
+        }
+      },
+      "mastery_rule": {
+        "topics_gained": {
+          "mean": 2.7065,
+          "ci95": 0.0587
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2452,
+          "ci95": 0.0064
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9111,
+          "ci95": 0.0052
+        }
+      },
+      "q_learning_frozen": {
+        "topics_gained": {
+          "mean": 2.3985,
+          "ci95": 0.0585
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2332,
+          "ci95": 0.0074
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9322,
+          "ci95": 0.004
+        }
+      },
+      "q_learning_online": {
+        "topics_gained": {
+          "mean": 2.5815,
+          "ci95": 0.0578
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2679,
+          "ci95": 0.008
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9443,
+          "ci95": 0.0037
+        }
+      }
+    },
+    "practice_heavy_env": {
+      "random": {
+        "topics_gained": {
+          "mean": 2.5355,
+          "ci95": 0.0585
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2605,
+          "ci95": 0.0079
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9274,
+          "ci95": 0.0045
+        }
+      },
+      "fixed_sequence": {
+        "topics_gained": {
+          "mean": 2.5395,
+          "ci95": 0.0589
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2516,
+          "ci95": 0.007
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9294,
+          "ci95": 0.0044
+        }
+      },
+      "mastery_rule": {
+        "topics_gained": {
+          "mean": 2.3375,
+          "ci95": 0.062
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.1992,
+          "ci95": 0.0062
+        },
+        "estimated_mastery_end": {
+          "mean": 0.8692,
+          "ci95": 0.0064
+        }
+      },
+      "q_learning_frozen": {
+        "topics_gained": {
+          "mean": 2.5605,
+          "ci95": 0.0579
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.2657,
+          "ci95": 0.0081
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9498,
+          "ci95": 0.0033
+        }
+      },
+      "q_learning_online": {
+        "topics_gained": {
+          "mean": 2.7455,
+          "ci95": 0.0569
+        },
+        "topics_gained_per_study_hour": {
+          "mean": 0.3346,
+          "ci95": 0.0091
+        },
+        "estimated_mastery_end": {
+          "mean": 0.9659,
+          "ci95": 0.0029
+        }
+      }
+    }
+  }
+}
