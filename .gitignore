@@ -12,6 +12,7 @@ frontend/playwright-report
 frontend/*.tsbuildinfo
 .ruff_cache/
 backend/data/exports/
-backend/data/gold/
+backend/data/gold/*
+!backend/data/gold/manifest.csv
 backend/data/corpus/
 backend/data/ocr/

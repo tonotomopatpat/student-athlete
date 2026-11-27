@@ -16,6 +16,7 @@ from sqlalchemy import select
 from app.core.config import BACKEND_DIR, get_settings
 from app.core.db import SessionLocal
 from app.core.migrations import upgrade_to_head
+from app.evaluation import gold
 from app.ml.simulator import pretrain, run_and_save
 from app.models import QCell, Recommendation, Response
 from app.services.seed import import_questions_csv, seed_samples
@@ -134,6 +135,29 @@ def cmd_gen_vapid(args: argparse.Namespace) -> None:
     print(f"Wrote VAPID keys to {env_path}")
 
 
+def cmd_gold_check(args: argparse.Namespace) -> None:
+    report = gold.validate(gold.read_manifest(Path(args.manifest)))
+    for name, counter in report.counts.items():
+        print(f"{name}: " + (", ".join(f"{key}={value}" for key, value in sorted(counter.items())) or "none"))
+    for warning in report.warnings:
+        print(f"warning: {warning}")
+    for error in report.errors:
+        print(f"error: {error}")
+    if report.errors:
+        sys.exit(1)
+    print("Manifest is valid.")
+
+
+def cmd_gold_split(args: argparse.Namespace) -> None:
+    manifest = Path(args.manifest)
+    rows = gold.read_manifest(manifest)
+    report = gold.validate(rows)
+    if report.errors:
+        sys.exit("Fix the manifest first (run gold-check).")
+    gold.write_manifest(gold.assign_splits(gold.fill_hashes(rows)), manifest)
+    print(f"Assigned splits for {len(rows)} documents in {manifest}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -153,6 +177,10 @@ def main() -> None:
     exp = sub.add_parser("export-logs")
     exp.add_argument("--out", default=str(BACKEND_DIR / "data" / "exports"))
     exp.set_defaults(func=cmd_export_logs)
+    for name, func in (("gold-check", cmd_gold_check), ("gold-split", cmd_gold_split)):
+        gold_cmd = sub.add_parser(name)
+        gold_cmd.add_argument("--manifest", default=str(gold.MANIFEST_PATH))
+        gold_cmd.set_defaults(func=func)
     vapid = sub.add_parser("gen-vapid")
     vapid.add_argument("--write", action="store_true", help="write keys into backend/.env")
     vapid.set_defaults(func=cmd_gen_vapid)
