@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     upload_dir: Path = BACKEND_DIR / "data" / "uploads"
     max_upload_bytes: int = 15 * 1024 * 1024
     scheduler_enabled: bool = True
+    auto_migrate: bool = True
     vapid_public_key: str = ""
     vapid_private_key: str = ""
     vapid_subject: str = "mailto:admin@example.com"

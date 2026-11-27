@@ -3,8 +3,9 @@ import tempfile
 from datetime import datetime
 
 _upload_dir = tempfile.mkdtemp(prefix="sideline-test-uploads-")
-os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
 os.environ["SCHEDULER_ENABLED"] = "false"
+os.environ["AUTO_MIGRATE"] = "false"
 os.environ["UPLOAD_DIR"] = _upload_dir
 os.environ["SECRET_KEY"] = "test-secret-key-test-secret-key-test"
 os.environ["VAPID_PUBLIC_KEY"] = ""

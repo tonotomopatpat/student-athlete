@@ -10,3 +10,4 @@ apscheduler
 pywebpush
 pymysql
 cryptography
+alembic

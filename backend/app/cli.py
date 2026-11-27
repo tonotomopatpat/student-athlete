@@ -14,7 +14,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from sqlalchemy import select
 
 from app.core.config import BACKEND_DIR, get_settings
-from app.core.db import Base, SessionLocal, engine
+from app.core.db import SessionLocal
+from app.core.migrations import upgrade_to_head
 from app.ml.simulator import pretrain, run_and_save
 from app.models import QCell, Recommendation, Response
 from app.services.seed import import_questions_csv, seed_samples
@@ -26,13 +27,13 @@ def _b64url(raw: bytes) -> str:
     return base64.urlsafe_b64encode(raw).rstrip(b"=").decode()
 
 
-def cmd_init_db(_args: argparse.Namespace) -> None:
-    Base.metadata.create_all(engine)
-    print("Database tables are ready.")
+def cmd_migrate(_args: argparse.Namespace) -> None:
+    upgrade_to_head()
+    print("Database schema is up to date.")
 
 
 def cmd_seed_samples(_args: argparse.Namespace) -> None:
-    Base.metadata.create_all(engine)
+    upgrade_to_head()
     with SessionLocal() as db:
         report = seed_samples(db)
     print(f"Sample content: {report.subjects} subjects, {report.topics} topics, {report.questions} questions added "
@@ -40,7 +41,7 @@ def cmd_seed_samples(_args: argparse.Namespace) -> None:
 
 
 def cmd_import_questions(args: argparse.Namespace) -> None:
-    Base.metadata.create_all(engine)
+    upgrade_to_head()
     with SessionLocal() as db:
         report = import_questions_csv(db, Path(args.file))
     if report.errors:
@@ -54,7 +55,7 @@ def cmd_import_questions(args: argparse.Namespace) -> None:
 
 def cmd_pretrain(args: argparse.Namespace) -> None:
     """Warm-start the shared Q-table by simulating learners. The result reflects ASSUMED dynamics only."""
-    Base.metadata.create_all(engine)
+    upgrade_to_head()
     learner = pretrain(students=args.students)
     with SessionLocal() as db:
         for (state, action), q_value in learner.q.items():
@@ -136,7 +137,7 @@ def cmd_gen_vapid(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(prog="app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("init-db").set_defaults(func=cmd_init_db)
+    sub.add_parser("migrate").set_defaults(func=cmd_migrate)
     sub.add_parser("seed-samples").set_defaults(func=cmd_seed_samples)
     imp = sub.add_parser("import-questions")
     imp.add_argument("file")

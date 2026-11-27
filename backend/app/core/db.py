@@ -17,6 +17,10 @@ def build_engine(url: str) -> Engine:
         kwargs["connect_args"] = {"check_same_thread": False}
         if ":memory:" in url:
             kwargs["poolclass"] = StaticPool
+    else:
+        kwargs["pool_recycle"] = 1800
+        # Each read sees the latest committed rows, as on SQLite; also avoids InnoDB gap-lock deadlocks.
+        kwargs["isolation_level"] = "READ COMMITTED"
     engine = create_engine(url, **kwargs)
     if sqlite:
 

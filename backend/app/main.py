@@ -6,11 +6,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app import models  # noqa: F401  (registers tables on Base.metadata)
 from app.api import assessments, auth, catalog, materials, notifications, progress, questions, recommendations
 from app.api import schedule as schedule_api
 from app.core.config import get_settings
-from app.core.db import Base, engine
+from app.core.migrations import upgrade_to_head
 from app.jobs import start_scheduler
 
 logger = logging.getLogger(__name__)
@@ -19,7 +18,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     settings = get_settings()
-    Base.metadata.create_all(engine)
+    if settings.auto_migrate:
+        upgrade_to_head()
     settings.upload_dir.mkdir(parents=True, exist_ok=True)
     scheduler = start_scheduler() if settings.scheduler_enabled else None
     try:

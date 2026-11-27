@@ -5,17 +5,21 @@ from sqlalchemy import (
     Boolean,
     Date,
     DateTime,
-    Float,
+    Double,
     ForeignKey,
     Integer,
     String,
     Text,
     UniqueConstraint,
 )
+from sqlalchemy.dialects import mysql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.clock import now_local
 from app.core.db import Base
+
+# MySQL DATETIME drops fractional seconds and FLOAT is single precision; keep both exact.
+Timestamp = DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql")
 
 COMMITMENT_KINDS = ("class", "exam", "training", "competition", "travel", "other")
 ACTIVITY_TYPES = ("review_material", "practice", "quiz", "revisit")
@@ -36,7 +40,7 @@ class User(Base):
     study_window_end: Mapped[int] = mapped_column(Integer, default=22 * 60)
     buffer_minutes: Mapped[int] = mapped_column(Integer, default=15)
     reminder_minutes: Mapped[int] = mapped_column(Integer, default=15)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_local)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
 
 
 class Subject(Base):
@@ -59,10 +63,10 @@ class Topic(Base):
     subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(160))
     position: Mapped[int] = mapped_column(Integer, default=0)
-    p_l0: Mapped[float] = mapped_column(Float, default=0.20)
-    p_t: Mapped[float] = mapped_column(Float, default=0.15)
-    p_g: Mapped[float] = mapped_column(Float, default=0.25)
-    p_s: Mapped[float] = mapped_column(Float, default=0.10)
+    p_l0: Mapped[float] = mapped_column(Double, default=0.20)
+    p_t: Mapped[float] = mapped_column(Double, default=0.15)
+    p_g: Mapped[float] = mapped_column(Double, default=0.25)
+    p_s: Mapped[float] = mapped_column(Double, default=0.10)
     subject: Mapped[Subject] = relationship(back_populates="topics")
 
 
@@ -101,7 +105,7 @@ class Material(Base):
     original_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     uploader_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_local)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
 
 
 class TopicMastery(Base):
@@ -111,10 +115,10 @@ class TopicMastery(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     topic_id: Mapped[int] = mapped_column(ForeignKey("topics.id", ondelete="CASCADE"))
-    p_mastery: Mapped[float] = mapped_column(Float)
+    p_mastery: Mapped[float] = mapped_column(Double)
     response_count: Mapped[int] = mapped_column(Integer, default=0)
     diagnostic_done: Mapped[bool] = mapped_column(Boolean, default=False)
-    last_activity_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    last_activity_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
 
 
 class Response(Base):
@@ -128,9 +132,9 @@ class Response(Base):
     context: Mapped[str] = mapped_column(String(20))
     chosen_index: Mapped[int] = mapped_column(Integer)
     correct: Mapped[bool] = mapped_column(Boolean)
-    mastery_before: Mapped[float] = mapped_column(Float)
-    mastery_after: Mapped[float] = mapped_column(Float)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_local)
+    mastery_before: Mapped[float] = mapped_column(Double)
+    mastery_after: Mapped[float] = mapped_column(Double)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
 
 
 class Commitment(Base):
@@ -140,8 +144,8 @@ class Commitment(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     title: Mapped[str] = mapped_column(String(160))
     kind: Mapped[str] = mapped_column(String(20))
-    start_at: Mapped[datetime] = mapped_column(DateTime)
-    end_at: Mapped[datetime] = mapped_column(DateTime)
+    start_at: Mapped[datetime] = mapped_column(Timestamp)
+    end_at: Mapped[datetime] = mapped_column(Timestamp)
     repeat_weekly: Mapped[bool] = mapped_column(Boolean, default=False)
     repeat_until: Mapped[date | None] = mapped_column(Date, nullable=True)
 
@@ -156,7 +160,7 @@ class Requirement(Base):
     subject_id: Mapped[int | None] = mapped_column(ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True)
     topic_id: Mapped[int | None] = mapped_column(ForeignKey("topics.id", ondelete="SET NULL"), nullable=True)
     title: Mapped[str] = mapped_column(String(160))
-    due_at: Mapped[datetime] = mapped_column(DateTime)
+    due_at: Mapped[datetime] = mapped_column(Timestamp)
     done: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
@@ -167,7 +171,7 @@ class QCell(Base):
 
     state: Mapped[str] = mapped_column(String(30), primary_key=True)
     action: Mapped[str] = mapped_column(String(30), primary_key=True)
-    q_value: Mapped[float] = mapped_column(Float)
+    q_value: Mapped[float] = mapped_column(Double)
     visits: Mapped[int] = mapped_column(Integer, default=0)
 
 
@@ -179,18 +183,18 @@ class Recommendation(Base):
     topic_id: Mapped[int] = mapped_column(ForeignKey("topics.id", ondelete="CASCADE"))
     activity_type: Mapped[str] = mapped_column(String(30))
     state_key: Mapped[str] = mapped_column(String(30))
-    q_value: Mapped[float] = mapped_column(Float)
+    q_value: Mapped[float] = mapped_column(Double)
     explored: Mapped[bool] = mapped_column(Boolean, default=False)
-    epsilon: Mapped[float] = mapped_column(Float)
-    available_minutes: Mapped[float] = mapped_column(Float)
+    epsilon: Mapped[float] = mapped_column(Double)
+    available_minutes: Mapped[float] = mapped_column(Double)
     status: Mapped[str] = mapped_column(String(20), default="pending")
-    mastery_before: Mapped[float | None] = mapped_column(Float, nullable=True)
-    mastery_after: Mapped[float | None] = mapped_column(Float, nullable=True)
-    reward: Mapped[float | None] = mapped_column(Float, nullable=True)
+    mastery_before: Mapped[float | None] = mapped_column(Double, nullable=True)
+    mastery_after: Mapped[float | None] = mapped_column(Double, nullable=True)
+    reward: Mapped[float | None] = mapped_column(Double, nullable=True)
     next_state_key: Mapped[str | None] = mapped_column(String(30), nullable=True)
-    q_value_after: Mapped[float | None] = mapped_column(Float, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_local)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    q_value_after: Mapped[float | None] = mapped_column(Double, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
+    completed_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
     session: Mapped["StudySession | None"] = relationship(back_populates="recommendation", uselist=False)
 
 
@@ -200,8 +204,8 @@ class StudySession(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     recommendation_id: Mapped[int] = mapped_column(ForeignKey("recommendations.id", ondelete="CASCADE"), unique=True)
-    start_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    end_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    start_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
+    end_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="scheduled")
     recommendation: Mapped[Recommendation] = relationship(back_populates="session")
 
@@ -217,10 +221,10 @@ class Notification(Base):
     title: Mapped[str] = mapped_column(String(160))
     body: Mapped[str] = mapped_column(Text, default="")
     link: Mapped[str | None] = mapped_column(String(120), nullable=True)
-    scheduled_for: Mapped[datetime] = mapped_column(DateTime, default=now_local)
-    pushed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    read_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_local)
+    scheduled_for: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
+    pushed_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
+    read_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
 
 
 class PushSubscription(Base):

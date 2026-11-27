@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.clock import now_local
@@ -52,13 +53,36 @@ def load_learner(db: Session) -> QLearner:
     return QLearner.from_rows(rows)
 
 
-def _save_cell(db: Session, state: str, action: str, learner: QLearner) -> None:
-    cell = db.get(QCell, (state, action))
-    q_value, visits = learner.q[(state, action)], learner.visits[(state, action)]
-    if cell is None:
-        db.add(QCell(state=state, action=action, q_value=q_value, visits=visits))
-    else:
-        cell.q_value, cell.visits = q_value, visits
+def _locked_cell(db: Session, state: str, action: str) -> QCell | None:
+    return db.scalar(
+        select(QCell)
+        .where(QCell.state == state, QCell.action == action)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+
+
+def _update_q(
+    db: Session, state: str, action: str, reward: float, next_state: str, next_eligible: list[str]
+) -> float:
+    """Q-update under a row lock so concurrent completions never overwrite each other's update."""
+    for _attempt in range(2):
+        learner = load_learner(db)
+        cell = _locked_cell(db, state, action)
+        if cell is not None:
+            learner.q[(state, action)], learner.visits[(state, action)] = cell.q_value, cell.visits
+        new_q = learner.update(state, action, reward, next_state, next_eligible)
+        visits = learner.visits[(state, action)]
+        if cell is not None:
+            cell.q_value, cell.visits = new_q, visits
+            return new_q
+        try:
+            with db.begin_nested():
+                db.add(QCell(state=state, action=action, q_value=new_q, visits=visits))
+            return new_q
+        except IntegrityError:
+            continue
+    raise RuntimeError("Could not save the Q-table update.")
 
 
 def _days_to_due(db: Session, user_id: int, topic: Topic, now: datetime) -> float | None:
@@ -262,9 +286,7 @@ def _finish(
     next_eligible = eligible_actions(
         recommendation.available_minutes, _material_count(db, user, topic) > 0, content.question_count(db, user, topic.id)
     )
-    learner = load_learner(db)
-    new_q = learner.update(recommendation.state_key, recommendation.activity_type, reward, next_state, next_eligible)
-    _save_cell(db, recommendation.state_key, recommendation.activity_type, learner)
+    new_q = _update_q(db, recommendation.state_key, recommendation.activity_type, reward, next_state, next_eligible)
 
     recommendation.status = "skipped" if skipped else "completed"
     recommendation.mastery_before, recommendation.mastery_after = before, after

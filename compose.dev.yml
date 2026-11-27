@@ -1,0 +1,24 @@
+# Local MySQL for development and for running the backend tests against MySQL.
+#   docker compose -f compose.dev.yml up -d
+#   TEST_DATABASE_URL="mysql+pymysql://sideline:sideline-dev@127.0.0.1:3306/sideline_test?charset=utf8mb4" pytest
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root-dev-only
+      MYSQL_DATABASE: sideline
+      MYSQL_USER: sideline
+      MYSQL_PASSWORD: sideline-dev
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql-dev:/var/lib/mysql
+      - ./backend/scripts/mysql-init.sql:/docker-entrypoint-initdb.d/01-test-db.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot-dev-only"]
+      interval: 5s
+      retries: 20
+
+volumes:
+  mysql-dev:
