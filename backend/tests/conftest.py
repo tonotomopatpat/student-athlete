@@ -15,6 +15,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.api import auth as auth_module  # noqa: E402
+from app.core import ratelimit  # noqa: E402
 from app.core.clock import freeze_now  # noqa: E402
 from app.core.db import Base, SessionLocal, engine  # noqa: E402
 from app.main import create_app  # noqa: E402
@@ -28,6 +29,7 @@ def fresh_database():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     auth_module.reset_rate_limits()
+    ratelimit.reset_all()
     freeze_now(FROZEN_NOW)
     yield
     freeze_now(None)

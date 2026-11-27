@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import assessments, auth, catalog, materials, notifications, progress, questions, recommendations
+from app.api import assessments, auth, catalog, materials, notifications, progress, questions, recommendations, syllabus
 from app.api import schedule as schedule_api
 from app.core.config import get_settings
 from app.core.migrations import upgrade_to_head
@@ -51,7 +51,7 @@ def create_app() -> FastAPI:
         )
 
     api = APIRouter(prefix="/api")
-    for module in (auth, catalog, materials, questions, assessments, recommendations, notifications, progress):
+    for module in (auth, catalog, materials, syllabus, questions, assessments, recommendations, notifications, progress):
         api.include_router(module.router)
     api.include_router(schedule_api.router)
 

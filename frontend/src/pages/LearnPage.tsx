@@ -16,6 +16,7 @@ import {
   useInvalidate,
   useToast,
 } from "../components/ui";
+import { SyllabusDialog } from "../components/SyllabusDialog";
 import { post, request, type Subject, type SubjectDetail } from "../lib/api";
 
 function SubjectCard({ subject }: { subject: Subject }) {
@@ -96,10 +97,22 @@ function NewSubjectDialog({ open, onClose }: { open: boolean; onClose: () => voi
 
 export function LearnPage() {
   const [creating, setCreating] = useState(false);
+  const [fromSyllabus, setFromSyllabus] = useState(false);
   const subjects = useQuery({ queryKey: ["subjects"], queryFn: () => request<Subject[]>("/subjects") });
   return (
     <div className="space-y-8">
-      <PageHeader title="Learn" kicker="Subjects and topics" action={<Button onClick={() => setCreating(true)}>New subject</Button>} />
+      <PageHeader
+        title="Learn"
+        kicker="Subjects and topics"
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => setFromSyllabus(true)}>Start from your syllabus</Button>
+            <Button variant="secondary" onClick={() => setCreating(true)}>
+              New subject
+            </Button>
+          </div>
+        }
+      />
       <QueryBoundary query={subjects}>
         {(all) => {
           const mine = all.filter((s) => s.enrolled);
@@ -111,7 +124,12 @@ export function LearnPage() {
                   <span id="mine-heading">My subjects</span>
                 </SectionTitle>
                 {mine.length === 0 ? (
-                  <EmptyState title="Nothing enrolled yet">Enroll below or create a subject of your own.</EmptyState>
+                  <EmptyState
+                    title="Nothing enrolled yet"
+                    action={<Button onClick={() => setFromSyllabus(true)}>Start from your syllabus</Button>}
+                  >
+                    Upload a syllabus and we will set up the subject and its topics, or enroll in one below.
+                  </EmptyState>
                 ) : (
                   <ul className="space-y-3">
                     {mine.map((s) => (
@@ -137,6 +155,7 @@ export function LearnPage() {
         }}
       </QueryBoundary>
       <NewSubjectDialog open={creating} onClose={() => setCreating(false)} />
+      <SyllabusDialog open={fromSyllabus} onClose={() => setFromSyllabus(false)} />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   useInvalidate,
   useToast,
 } from "../components/ui";
+import { SubjectLessons } from "../components/SubjectLessons";
 import { del, post, request, type SubjectDetail, type Topic } from "../lib/api";
 
 function TopicStatus({ topic }: { topic: Topic }) {
@@ -148,6 +149,7 @@ export function SubjectPage() {
               )}
               {own && <AddTopic subjectId={data.id} />}
             </section>
+            {data.enrolled && <SubjectLessons subjectId={data.id} topics={data.topics} />}
             <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete this subject?">
               <p>This removes its topics, questions, materials and your progress in it. It cannot be undone.</p>
               <div className="flex justify-end gap-3">

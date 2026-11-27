@@ -11,3 +11,7 @@ pywebpush
 pymysql
 cryptography
 alembic
+pypdf
+python-docx
+python-pptx
+defusedxml

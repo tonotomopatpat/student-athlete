@@ -3,6 +3,7 @@
 import argparse
 import base64
 import csv
+import json
 import hashlib
 import hmac
 import re
@@ -16,12 +17,14 @@ from sqlalchemy import select
 from app.core.config import BACKEND_DIR, get_settings
 from app.core.db import SessionLocal
 from app.core.migrations import upgrade_to_head
-from app.evaluation import gold
+from app.evaluation import gold, outline
 from app.ml.simulator import pretrain, run_and_save
-from app.models import QCell, Recommendation, Response
+from app.models import Material, QCell, Recommendation, Response
+from app.services.ingestion import extract_material, extractable
 from app.services.seed import import_questions_csv, seed_samples
 
 DEFAULT_SIMULATION_PATH = BACKEND_DIR / "data" / "simulation_results.json"
+RESULTS_DIR = BACKEND_DIR / "evaluation" / "results"
 
 
 def _b64url(raw: bytes) -> str:
@@ -158,6 +161,30 @@ def cmd_gold_split(args: argparse.Namespace) -> None:
     print(f"Assigned splits for {len(rows)} documents in {manifest}")
 
 
+def cmd_extract_materials(args: argparse.Namespace) -> None:
+    upgrade_to_head()
+    with SessionLocal() as db:
+        query = select(Material)
+        if not args.all:
+            query = query.where(Material.extraction_status == "pending")
+        done = 0
+        for material in db.scalars(query).all():
+            if extractable(material):
+                extract_material(db, material)
+                db.commit()
+                done += 1
+    print(f"Extracted text for {done} materials.")
+
+
+def cmd_eval_outline(args: argparse.Namespace) -> None:
+    result = outline.evaluate(gold.read_manifest(Path(args.manifest)), args.split)
+    out = Path(args.out) if args.out else RESULTS_DIR / f"outline_{args.split}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result, indent=2))
+    print(f"{result['documents']} syllabi: precision {result['micro_precision']:.2f}, "
+          f"recall {result['micro_recall']:.2f}, F1 {result['micro_f1']:.2f}. Written to {out}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="app.cli")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -181,6 +208,14 @@ def main() -> None:
         gold_cmd = sub.add_parser(name)
         gold_cmd.add_argument("--manifest", default=str(gold.MANIFEST_PATH))
         gold_cmd.set_defaults(func=func)
+    extract = sub.add_parser("extract-materials", help="read text from uploaded materials that have not been read yet")
+    extract.add_argument("--all", action="store_true", help="re-read every material")
+    extract.set_defaults(func=cmd_extract_materials)
+    evaluate_outline = sub.add_parser("eval-outline", help="compare syllabus topic proposals with hand-marked outlines")
+    evaluate_outline.add_argument("--manifest", default=str(gold.MANIFEST_PATH))
+    evaluate_outline.add_argument("--split", choices=gold.SPLITS, default="dev")
+    evaluate_outline.add_argument("--out")
+    evaluate_outline.set_defaults(func=cmd_eval_outline)
     vapid = sub.add_parser("gen-vapid")
     vapid.add_argument("--write", action="store_true", help="write keys into backend/.env")
     vapid.set_defaults(func=cmd_gen_vapid)

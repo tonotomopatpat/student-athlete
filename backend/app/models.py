@@ -20,12 +20,16 @@ from app.core.db import Base
 
 # MySQL DATETIME drops fractional seconds and FLOAT is single precision; keep both exact.
 Timestamp = DateTime().with_variant(mysql.DATETIME(fsp=6), "mysql")
+# MySQL TEXT holds only 64 KB; extracted lessons need more.
+LongText = Text().with_variant(mysql.MEDIUMTEXT(), "mysql")
 
 COMMITMENT_KINDS = ("class", "exam", "training", "competition", "travel", "other")
 ACTIVITY_TYPES = ("review_material", "practice", "quiz", "revisit")
 SESSION_STATUSES = ("scheduled", "completed", "skipped", "needs_reschedule")
 RECOMMENDATION_STATUSES = ("pending", "started", "completed", "skipped")
 RESPONSE_CONTEXTS = ("diagnostic", "practice", "quiz", "revisit", "self")
+EXTRACTION_STATUSES = ("pending", "ok", "failed", "needs_review")
+GENERATION_JOB_STATUSES = ("queued", "running", "done", "failed")
 
 
 class User(Base):
@@ -106,6 +110,47 @@ class Material(Base):
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     uploader_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local)
+    extracted_text: Mapped[str | None] = mapped_column(LongText, nullable=True)
+    extraction_status: Mapped[str] = mapped_column(String(20), default="pending", server_default="pending")
+    extraction_error: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    text_hash: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    sections: Mapped[list["MaterialSection"]] = relationship(
+        back_populates="material", order_by="MaterialSection.position", cascade="all, delete-orphan"
+    )
+
+
+class MaterialSection(Base):
+    """A heading-delimited part of a material's extracted text, routed to one of the subject's topics."""
+
+    __tablename__ = "material_sections"
+    __table_args__ = (UniqueConstraint("material_id", "position"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    material_id: Mapped[int] = mapped_column(ForeignKey("materials.id", ondelete="CASCADE"), index=True)
+    position: Mapped[int] = mapped_column(Integer)
+    title: Mapped[str] = mapped_column(String(300), default="")
+    level: Mapped[int] = mapped_column(Integer, default=0)
+    page: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    word_count: Mapped[int] = mapped_column(Integer, default=0)
+    topic_id: Mapped[int | None] = mapped_column(ForeignKey("topics.id", ondelete="SET NULL"), nullable=True, index=True)
+    score: Mapped[float] = mapped_column(Double, default=0.0)
+    assigned_by: Mapped[str] = mapped_column(String(10), default="auto")
+    material: Mapped[Material] = relationship(back_populates="sections")
+
+
+class GenerationJob(Base):
+    __tablename__ = "generation_jobs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    material_id: Mapped[int] = mapped_column(ForeignKey("materials.id", ondelete="CASCADE"), index=True)
+    status: Mapped[str] = mapped_column(String(20), default="queued")
+    question_count: Mapped[int] = mapped_column(Integer, default=0)
+    error: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(Timestamp, default=now_local, index=True)
+    started_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(Timestamp, nullable=True)
 
 
 class TopicMastery(Base):

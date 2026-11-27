@@ -112,6 +112,58 @@ class MaterialOut(ORM):
     original_name: str | None
     mime_type: str | None
     created_at: datetime
+    extraction_status: str
+    extraction_error: str | None
+    language: str | None
+
+
+class MaterialTextOut(ORM):
+    id: int
+    extraction_status: str
+    extraction_error: str | None
+    language: str | None
+    extracted_text: str | None
+
+
+class SectionOut(ORM):
+    id: int
+    material_id: int
+    position: int
+    title: str
+    level: int
+    page: int | None
+    word_count: int
+    topic_id: int | None
+    score: float
+    assigned_by: str
+
+
+class UnsortedSectionOut(SectionOut):
+    material_title: str
+
+
+class SectionAssignIn(BaseModel):
+    topic_id: int | None
+
+
+class SyllabusPreviewOut(BaseModel):
+    name: str
+    code: str | None
+    topics: list[str]
+    warnings: list[str]
+
+
+class SyllabusConfirmIn(BaseModel):
+    name: Title
+    description: LongText = ""
+    topics: list[Title] = Field(min_length=1, max_length=40)
+
+    @model_validator(mode="after")
+    def topics_are_unique(self) -> "SyllabusConfirmIn":
+        lowered = [topic.lower() for topic in self.topics]
+        if len(set(lowered)) != len(lowered):
+            raise ValueError("Topic names must be unique.")
+        return self
 
 
 class MaterialNoteIn(BaseModel):

@@ -6,7 +6,7 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.errors import conflict
 from app.models import Enrollment, Subject, Topic, TopicMastery, User
 from app.schemas import SubjectDetailOut, SubjectIn, SubjectOut, TopicIn, TopicOut
-from app.services import content
+from app.services import content, ingestion
 from app.services.materials import delete_stored_files_for_subject
 
 router = APIRouter(tags=["catalog"])
@@ -129,6 +129,8 @@ def create_topic(subject_id: int, payload: TopicIn, user: CurrentUser, db: DbSes
     topic = Topic(subject_id=subject.id, name=payload.name, position=position)
     db.add(topic)
     try:
+        db.flush()
+        ingestion.reroute_subject(db, subject.id)
         db.commit()
     except IntegrityError:
         db.rollback()
@@ -141,6 +143,8 @@ def delete_topic(topic_id: int, user: CurrentUser, db: DbSession) -> None:
     topic = content.get_visible_topic(db, user, topic_id)
     content.get_owned_subject(db, user, topic.subject_id)
     db.delete(topic)
+    db.flush()
+    ingestion.reroute_subject(db, topic.subject_id)
     db.commit()
 
 

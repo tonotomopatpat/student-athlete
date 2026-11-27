@@ -1,6 +1,6 @@
 from collections import Counter
 
-from app.evaluation import gold
+from app.evaluation import gold, outline
 
 
 def make_row(doc_id: str, subject: str = "Biology", kind: str = "lesson", split: str = "", **overrides) -> dict:
@@ -74,3 +74,10 @@ def test_split_is_stratified_deterministic_and_keeps_frozen_rows():
 def test_shortfall_warnings():
     report = gold.validate([], gold.FILES_DIR)
     assert len(report.warnings) == 3
+
+
+def test_outline_matching_is_one_to_one():
+    proposed = ["History of Psychology", "Memory", "Memory and forgetting", "Orientation"]
+    expected = ["History and approaches of psychology", "Memory and forgetting", "Learning"]
+    assert outline.match_count(proposed, expected) == 2
+    assert outline.match_count([], expected) == 0

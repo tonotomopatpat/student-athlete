@@ -2,14 +2,16 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.errors import bad_request, not_found
-from app.models import Material, Topic
-from app.schemas import MaterialNoteIn, MaterialOut
-from app.services import content
+from app.core.ratelimit import extract_limiter, upload_limiter
+from app.models import Material, MaterialSection, Topic
+from app.schemas import MaterialNoteIn, MaterialOut, MaterialTextOut, SectionAssignIn, SectionOut, UnsortedSectionOut
+from app.services import content, ingestion
 from app.services.materials import (
     ALLOWED_TYPES,
     delete_stored_file,
@@ -56,6 +58,7 @@ async def upload_material(
 ) -> Material:
     content.get_visible_subject(db, user, subject_id)
     _check_topic(db, subject_id, topic_id)
+    upload_limiter.hit(user.id)
     stored_name, original_name, mime_type = await store_upload(file)
     material = Material(
         subject_id=subject_id,
@@ -74,6 +77,8 @@ async def upload_material(
         db.rollback()
         delete_stored_file(stored_name)
         raise
+    await run_in_threadpool(ingestion.extract_material, db, material)
+    db.commit()
     return material
 
 
@@ -90,6 +95,8 @@ def create_note(payload: MaterialNoteIn, user: CurrentUser, db: DbSession) -> Ma
         uploader_id=user.id,
     )
     db.add(material)
+    db.flush()
+    ingestion.extract_material(db, material)
     db.commit()
     return material
 
@@ -120,3 +127,60 @@ def delete_material(material_id: int, user: CurrentUser, db: DbSession) -> None:
     db.delete(material)
     db.commit()
     delete_stored_file(stored_name)
+
+
+@router.get("/materials/{material_id}/text", response_model=MaterialTextOut)
+def material_text(material_id: int, user: CurrentUser, db: DbSession) -> Material:
+    return _own_material(db, user.id, material_id)
+
+
+@router.post("/materials/{material_id}/extract", response_model=MaterialOut)
+async def reextract_material(material_id: int, user: CurrentUser, db: DbSession) -> Material:
+    material = _own_material(db, user.id, material_id)
+    if not ingestion.extractable(material):
+        raise bad_request("not_extractable", "Text cannot be read from this material yet.")
+    extract_limiter.hit(user.id)
+    await run_in_threadpool(ingestion.extract_material, db, material)
+    db.commit()
+    return material
+
+
+@router.get("/materials/{material_id}/sections", response_model=list[SectionOut])
+def material_sections(material_id: int, user: CurrentUser, db: DbSession) -> list[MaterialSection]:
+    return list(_own_material(db, user.id, material_id).sections)
+
+
+@router.put("/materials/{material_id}/sections/{section_id}", response_model=SectionOut)
+def assign_section(
+    material_id: int, section_id: int, payload: SectionAssignIn, user: CurrentUser, db: DbSession
+) -> MaterialSection:
+    material = _own_material(db, user.id, material_id)
+    section = db.scalar(
+        select(MaterialSection).where(MaterialSection.id == section_id, MaterialSection.material_id == material.id)
+    )
+    if section is None:
+        raise not_found("Section")
+    _check_topic(db, material.subject_id, payload.topic_id)
+    section.topic_id, section.assigned_by = payload.topic_id, "student"
+    db.commit()
+    return section
+
+
+@router.get("/subjects/{subject_id}/unsorted", response_model=list[UnsortedSectionOut])
+def unsorted_sections(subject_id: int, user: CurrentUser, db: DbSession) -> list[UnsortedSectionOut]:
+    content.get_visible_subject(db, user, subject_id)
+    rows = db.execute(
+        select(MaterialSection, Material.title)
+        .join(Material, Material.id == MaterialSection.material_id)
+        .where(
+            Material.subject_id == subject_id,
+            Material.uploader_id == user.id,
+            MaterialSection.topic_id.is_(None),
+            MaterialSection.word_count > 0,
+        )
+        .order_by(Material.created_at.desc(), MaterialSection.position)
+    ).all()
+    return [
+        UnsortedSectionOut(**SectionOut.model_validate(section).model_dump(), material_title=title)
+        for section, title in rows
+    ]

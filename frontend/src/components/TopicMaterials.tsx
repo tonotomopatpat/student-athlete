@@ -17,6 +17,7 @@ import {
   useInvalidate,
   useToast,
 } from "./ui";
+import { MaterialStatus } from "./MaterialStatus";
 
 interface Props {
   subjectId: number;
@@ -88,7 +89,10 @@ function MaterialRow({ material }: { material: Material }) {
     <li className="space-y-2 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
-          <Chip>{material.kind}</Chip>
+          <div className="flex flex-wrap gap-2">
+            <Chip>{material.kind}</Chip>
+            <MaterialStatus material={material} />
+          </div>
           <p className="break-words font-display text-xl font-bold">{material.title}</p>
           {material.kind === "file" && (
             <a className="font-semibold underline underline-offset-4" href={`/api/materials/${material.id}/file`} target="_blank" rel="noopener noreferrer">
@@ -168,7 +172,7 @@ export function TopicMaterials({ subjectId, topicId }: Props) {
         }}
       />
       <p className="mb-3 text-sm text-ink-soft">
-        Files are stored for you to open later (PDF, DOCX, PPTX, TXT, MD, PNG, JPG up to 15 MB). The app does not read them. Only you can see them.
+        PDF, DOCX, PPTX, TXT, MD, PNG or JPG up to 15 MB. The app reads the text of documents and notes; photos and scans are kept but not read yet. Only you can see them.
       </p>
       <QueryBoundary query={materials}>
         {(items) =>

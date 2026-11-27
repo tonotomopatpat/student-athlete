@@ -40,6 +40,8 @@ export interface SubjectDetail extends Subject {
   topics: Topic[];
 }
 
+export type ExtractionStatus = "pending" | "ok" | "failed" | "needs_review";
+
 export interface Material {
   id: number;
   subject_id: number;
@@ -50,6 +52,33 @@ export interface Material {
   original_name: string | null;
   mime_type: string | null;
   created_at: string;
+  extraction_status: ExtractionStatus;
+  extraction_error: string | null;
+  language: string | null;
+}
+
+export interface MaterialSection {
+  id: number;
+  material_id: number;
+  position: number;
+  title: string;
+  level: number;
+  page: number | null;
+  word_count: number;
+  topic_id: number | null;
+  score: number;
+  assigned_by: "auto" | "student";
+}
+
+export interface UnsortedSection extends MaterialSection {
+  material_title: string;
+}
+
+export interface SyllabusPreview {
+  name: string;
+  code: string | null;
+  topics: string[];
+  warnings: string[];
 }
 
 export interface QuestionPublic {
